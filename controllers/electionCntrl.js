@@ -11,8 +11,9 @@ const getOngoingElections = async (req, res) => {
 
 
 const startNewElection = async (req, res) => {
+  console.log("im election data",req.body)
   try {
-    const election = await ElectionModal.create(req.body.formData);
+    const election = await ElectionModal.create(req.body.dataToSend);
     res.status(200).send({ election });
   } catch (error) {
     console.log(error);
