@@ -5,77 +5,59 @@ const mongoose = require("mongoose");
 const addUserSchema = new mongoose.Schema({
   membershipnumber: {
     type: String,
-    required: true,
   },
-  username:{
+  username: {
     type: String,
-    required: true,
   },
-  dob:{
+  dob: {
     type: String,
-    required: true,
   },
-    public_id: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-  age:{
+  public_id: {
     type: String,
-    required: true,
   },
-  contactnumber:{
+  email: {
     type: String,
-    required: true,
   },
-  otpmobilenumber:{
+  url: {
     type: String,
-    required: true,
   },
-  votingtype:{
+  age: {
     type: String,
-    required: true,
   },
-  presentAddress:{
+  contactnumber: {
     type: String,
-    required: true,
   },
-  permanentAddress:{
+  otpmobilenumber: {
     type: String,
-    required: true,
   },
-  role:{
-    type:String,
-    default:"user"
-  },
-  nomineeName:{
+  votingtype: {
     type: String,
-    required: true,
   },
-  currentposition:{
+  presentAddress: {
     type: String,
-    required: true,
   },
-  aadharnumber:{
+  permanentAddress: {
     type: String,
-    required: true,
   },
-  profession:{
+  role: {
     type: String,
-    required: true,
+    default: "user",
   },
-  remarks:{
+  nomineeName: {
     type: String,
-    required: true,
   },
-
+  currentposition: {
+    type: String,
+  },
+  aadharnumber: {
+    type: String,
+  },
+  profession: {
+    type: String,
+  },
+  remarks: {
+    type: String,
+  },
 });
 
 addUserSchema.pre("save", async function (next) {
