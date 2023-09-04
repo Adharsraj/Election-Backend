@@ -49,4 +49,24 @@ const getAllVoteCollection = async (req, res) => {
   }
 };
 
-module.exports = { castVote, getSingleVoteCollection, getAllVoteCollection };
+const addOfflineVote = async (req, res) => {
+  console.log(req.body)
+  try {
+    const offlineVote = await VoteModal.findById(req.body.electionId);
+
+    if (!offlineVote) {
+      return res.status(404).json({ message: "Election not found" });
+    }
+
+    offlineVote.RepresentativeName.push(...req.body.names);
+
+    await offlineVote.save();
+
+    return res.status(200).json({ message: "Names added successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { castVote, getSingleVoteCollection, getAllVoteCollection,addOfflineVote };
