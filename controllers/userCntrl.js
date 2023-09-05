@@ -2,6 +2,8 @@ const UserModal = require("../models/UserModal");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const cloudinary = require("../utils/cloudinary");
+const fast2sms=require('fast-two-sms')
+
 
 const showUser = async (req, res) => {
   try {
@@ -13,55 +15,21 @@ const showUser = async (req, res) => {
   }
 };
 
-// const sendEmailOtp=async(req,res)=>{
-// const {email}=req.body
-// console.log(email)
-// const generatedOtp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
 
-// try {
-//   const transporter= nodemailer.createTransport({
-//     service:"gmail",
-//     auth:{
-//       user:"adarshrajashekhar@gmail.com",
-//       pass:"mqhycvouhfdzheun"
-//     }
-//   })
-//   console.log("generatedOtp",generatedOtp)
-//   const otpData = {
-//     email,
-//     otp: generatedOtp,
-//     expiration: Date.now() + 5 * 60 * 1000, // OTP expires in 5 minutes
-//   };
-
-//   const mailOptions={
-//     from:"adarshrajashekhar@gmail.com",
-//     to:email,
-//     subject:"EMAIL WITH NODE",
-//     html: `<h1>Your OTP: ${generatedOtp}</h1>`,
-//   }
-
-//   transporter.sendMail(mailOptions,(error,info)=>{
-//     if(error){
-//       console.log("error",error)
-//     }
-//     else{
-//       console.log("Email sent"+info.response)
-//       res.status(201).json({status:201,info})
-//     }
-//   })
-// } catch (error) {
-//   res.status(201).json({status:401,error})
-
-// }
-// }
 const otpData = {};
+const otpStorage = {};
 
 const sendEmailOtp = async (req, res) => {
   const { email } = req.body;
+
+  const User = await UserModal.findOne({ email });
+
+  console.log("iam user", User);
+  if (!User) {
+    return res.status(401).send("email not registered");
+  }
   const generatedOtp = Math.floor(1000 + Math.random() * 9000);
 
-  // Store the OTP temporarily (you might use a database for a production app)
-  // For simplicity, we're using an in-memory object here.
   otpData[email] = {
     otp: generatedOtp,
     expiration: Date.now() + 5 * 60 * 1000, // OTP expires in 5 minutes
@@ -93,14 +61,14 @@ const sendEmailOtp = async (req, res) => {
   });
 };
 
-const verifyemailotp =async (req, res) => {
+const verifyemailotp = async (req, res) => {
   const { email, otp } = req.body;
   const User = await UserModal.findOne({ email });
 
-  console.log("iam user",User)
+  console.log("iam user", User);
   if (!User) {
-      return res.status(401).send("email not registered");
-}
+    return res.status(401).send("email not registered");
+  }
   const storedOtp = otpData[email]?.otp;
   const expiration = otpData[email]?.expiration;
 
@@ -115,9 +83,76 @@ const verifyemailotp =async (req, res) => {
 
     return res
       .status(200)
-      .json({ verified: true, message: "OTP verified successfully",User ,token});
+      .json({
+        verified: true,
+        message: "OTP verified successfully",
+        User,
+        token,
+      });
   } else {
     return res.status(400).json({ verified: false, message: "Invalid OTP" });
+  }
+};
+
+const sendPhoneOtp = async (req, res) => {
+
+function generateRandomOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+  try {
+
+    const { otpmobilenumber } = req.body;
+    const User = await UserModal.findOne({ otpmobilenumber });
+    console.log("iam user", User);
+    if (!User) {
+      return res.status(401).send("Phone number not registered");
+    }
+    const otp = generateRandomOTP();
+
+        // await fast2sms.sendMessage({
+        //   authorization:"LzDfy8EGHOTJwIxZB2WM9YbmFkcp0avodP3jg5CVitX4elqQh1zgl5y4rbwAYfDGJxcetus8T1aHWROS",
+        //   message: `Your OTP is ${otp}. Please enter this to complete registration.`,
+        //   numbers: [req.body.otpmobilenumber],
+        // });
+    console.log("otp", otp);
+    if (otp) {
+      otpStorage[otpmobilenumber] = otp;
+      res.status(200).json({ message: "OTP sent successfully" });
+    } else {
+      res.status(500).json({ message: "Failed to send OTP" });
+    }
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const verifyPhoneOtp = async (req, res) => {
+  try {
+    const { otpmobilenumber, otp } = req.body;
+
+    const User = await UserModal.findOne({ otpmobilenumber });
+    console.log("iam user", User);
+    if (!User) {
+      return res.status(401).send("Phone number not registered");
+    }
+    // Retrieve the stored OTP
+    const storedOtp = otpStorage[otpmobilenumber];
+    console.log(storedOtp);
+    if (storedOtp && storedOtp === otp) {
+      // OTP is valid
+      // Remove the OTP from storage to prevent reuse
+      delete otpStorage[otpmobilenumber];
+      const token = User.createJWT();
+
+      res.status(200).json({ message: "OTP is valid", token, User });
+    } else {
+      // OTP is invalid
+      res.status(400).json({ message: "Invalid OTP" });
+    }
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -138,7 +173,7 @@ const addNewUser = async (req, res) => {
     aadharnumber,
     profession,
     remarks,
-    email
+    email,
   } = req.body;
   try {
     const result = await cloudinary.uploader.upload(userImage, {
@@ -147,7 +182,7 @@ const addNewUser = async (req, res) => {
       height: 300,
       crop: "scale",
     });
-    console.log("result",result)
+    console.log("result", result);
     const newUser = await UserModal.create({
       public_id: result.public_id,
       url: result.secure_url,
@@ -205,4 +240,6 @@ module.exports = {
   deleteUser,
   sendEmailOtp,
   verifyemailotp,
+  sendPhoneOtp,
+  verifyPhoneOtp,
 };
