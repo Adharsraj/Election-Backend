@@ -41,6 +41,7 @@ const sendEmailOtp = async (req, res) => {
       user: "adarshrajashekhar@gmail.com",
       pass: "mqhycvouhfdzheun",
     },
+    
   });
 
   const mailOptions = {

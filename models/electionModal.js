@@ -27,6 +27,8 @@ let electionSchema = new mongoose.Schema({
   electionName: { type: String },
   startDate: { type: Date },
   endDate: { type: Date },
+  userid: Array,
+
 });
 
 module.exports = mongoose.model("election", electionSchema);

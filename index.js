@@ -7,10 +7,6 @@ const session = require('express-session');
 const app = express();
 app.use(express.json({limit: '50mb'}));
 
-
-
-
-
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Db connected"))

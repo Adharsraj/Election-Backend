@@ -2,65 +2,6 @@ const UserModal = require("../models/UserModal");
 const jwt = require('jsonwebtoken');
 
 
-// const fast2smsApiKey = "LzDfy8EGHOTJwIxZB2WM9YbmFkcp0avodP3jg5CVitX4elqQh1zgl5y4rbwAYfDGJxcetus8T1aHWROS";
-
-// const sendOtp = async (req, res) => {
-//   const { email } = req.body;
-
-//   // Generate a random OTP (6-digit)
-//   const otp = Math.floor(100000 + Math.random() * 900000);
-
-//   try {
-//     const user = await UserModal.findOne({ email });
-
-//     if (!user) {
-//       return res.json({ success: false, message: "User not found" });
-//     }
-
-//     user.otp = otp; // Assign OTP to the user
-//     await user.save();
-
-//     // Replace with your actual implementation to send OTP using Fast2SMS
-//     const response = await axios.get(
-//       `https://www.fast2sms.com/dev/bulkV2?authorization=${fast2smsApiKey}&message=${otp}&language=english&route=dlt&numbers=${email}`
-//     );
-
-//     if (response.data.return === true) {
-//       res.json({ success: true });
-//     } else {
-//       res.json({ success: false });
-//     }
-//   } catch (error) {
-//     console.error("Error sending OTP:", error);
-//     res.status(500).json({ success: false });
-//   }
-// };
-
-// const verifyOtp = async (req, res) => {
-//   const { email, otp } = req.body;
-
-//   try {
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//       return res.json({ success: false, message: "User not found" });
-//     }
-
-//     if (user.otp === otp) {
-//       user.otp = undefined; // Clear the OTP
-//       await user.save();
-
-//       // Generate and send JWT token for authentication
-//       const token = user.createJWT();
-//       res.json({ success: true, token });
-//     } else {
-//       res.json({ success: false });
-//     }
-//   } catch (error) {
-//     console.error("Error verifying OTP:", error);
-//     res.status(500).json({ success: false });
-//   }
-// };
 
 
 

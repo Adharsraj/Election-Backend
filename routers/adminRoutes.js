@@ -14,9 +14,6 @@ const UserModal = require("../models/UserModal");
 const session = require('express-session');
 
 
-
-
-
 router.post('/send-otp', sendPhoneOtp);
 router.post('/verify-otp',verifyPhoneOtp);
 router.post("/verifyemailotp", verifyemailotp);
