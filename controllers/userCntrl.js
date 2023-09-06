@@ -41,7 +41,7 @@ const sendEmailOtp = async (req, res) => {
       user: "adarshrajashekhar@gmail.com",
       pass: "mqhycvouhfdzheun",
     },
-    
+
   });
 
   const mailOptions = {
@@ -110,11 +110,11 @@ function generateRandomOTP() {
     }
     const otp = generateRandomOTP();
 
-        // await fast2sms.sendMessage({
-        //   authorization:"LzDfy8EGHOTJwIxZB2WM9YbmFkcp0avodP3jg5CVitX4elqQh1zgl5y4rbwAYfDGJxcetus8T1aHWROS",
-        //   message: `Your OTP is ${otp}. Please enter this to complete registration.`,
-        //   numbers: [req.body.otpmobilenumber],
-        // });
+        await fast2sms.sendMessage({
+          authorization:"LzDfy8EGHOTJwIxZB2WM9YbmFkcp0avodP3jg5CVitX4elqQh1zgl5y4rbwAYfDGJxcetus8T1aHWROS",
+          message: `Your OTP is ${otp}. Please enter this to complete registration.`,
+          numbers: [req.body.otpmobilenumber],
+        });
     console.log("otp", otp);
     if (otp) {
       otpStorage[otpmobilenumber] = otp;
